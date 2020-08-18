@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "6655908590",
+    "firebase_url": "https://the-oracle-112b2.firebaseio.com",
+    "project_id": "the-oracle-112b2",
+    "storage_bucket": "the-oracle-112b2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:6655908590:android:15428f909da160b4c271ff",
+        "android_client_info": {
+          "package_name": "com.roundsquaresstudios.oracle"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "6655908590-fklmdoj559k88vv5fapenmg26m78jbia.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.roundsquaresstudios.oracle",
+            "certificate_hash": "15294a2780d52c04afb30647215c3a35aa4783b7"
+          }
+        },
+        {
+          "client_id": "6655908590-nb61jloifhri16b2dqm4a88nb3vvnlre.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXe-y1DHNfSUGRF0Xh-lxgIrwfs7iVCIc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "6655908590-nb61jloifhri16b2dqm4a88nb3vvnlre.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
