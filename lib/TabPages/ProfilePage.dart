@@ -201,7 +201,7 @@ class _skills extends StatelessWidget {
             children: [
               Container(
                 padding: EdgeInsets.all(20),
-                margin: EdgeInsets.only(right: 16),
+                //margin: EdgeInsets.only(right: 4),
                 decoration: ShapeDecoration(
                   shape: PolygonBorder(
                     rotate: 90,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:oracle/models/home_posts.dart';
+import 'package:oracle/shared/loading.dart';
 import 'package:provider/provider.dart';
 import '../../models/improvement.dart';
 import 'home_post_tile.dart';
@@ -16,7 +17,7 @@ class _HomePostListState extends State<HomePostList> {
 
     final homePosts = Provider.of<List<HomePost>>(context);
 
-    return ListView.builder(
+    return homePosts == null ? Loading() : ListView.builder(
       itemCount: homePosts.length,
       itemBuilder: (context, index) {
         return HomePostTile(homePost: homePosts[index]);

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:oracle/Services/database.dart';
 import 'package:oracle/models/improvement.dart';
 import 'package:oracle/models/user.dart';
+import 'package:oracle/shared/loading.dart';
 
 import 'improvement_form.dart';
 
@@ -20,7 +21,7 @@ class ImprovementTile extends StatelessWidget {
 
         User user = snapshot.data;
 
-        return Padding(
+        return user == null ? CircularProgressIndicator() : Padding(
           padding: EdgeInsets.only(top: 8.0),
           child: Card(
             margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
@@ -29,7 +30,9 @@ class ImprovementTile extends StatelessWidget {
                 ListTile(
                   leading: CircleAvatar(
                     radius: 20.0,
-                    backgroundImage: NetworkImage(user.profileImage),
+                    backgroundImage: Image.network(user.profileImage ?? '', loadingBuilder: (context, child, progress) {
+                      return progress == null ? child : CircularProgressIndicator();
+                    },).image,
                   ),
                   title: Text(improvement.title),
                   subtitle: Text(improvement.description),

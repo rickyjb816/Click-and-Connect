@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:oracle/Legals/end_user_agreement.dart';
 import 'package:oracle/Services/auth.dart';
 import 'package:oracle/Services/database.dart';
 import 'package:oracle/models/user.dart';
@@ -106,18 +107,13 @@ class _SettingsPageState extends State<SettingsPage> {
                           color: buttonColor,
                           textColor: buttonTextColor,
                           onPressed: () {
-                            showAboutDialog(
-                              context: context,
-                              applicationName: 'Click and Connect',
-                              applicationLegalese: 'This is a test for the legal information'
-                            );
-                            //Would like a better way of displaying this
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => EndUserAgreement()));
                           },
-                          child: Text('Legal Information'),
+                          child: Text('End User Agreement'),
                         ),
                       ),
                       SizedBox(width: 10,),
-                      Expanded(
+                      /*Expanded(
                         child: RaisedButton(
                           shape: buttonShape,
                           color: buttonColor,
@@ -132,7 +128,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           },
                           child: Text('Help and Support'),
                         ),
-                      ),
+                      ),*/
                     ],
                   ),
 
