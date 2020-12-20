@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:oracle/models/improvement.dart';
 
 class User{
 
@@ -24,6 +25,11 @@ class User{
 
   List<ProfileLinks> profileLinks;
 
+  List<String> networkingSeenAccounts; //list of people this account has already seen - no need to show them again, also wipe after a week or something
+  List<String> votes;
+  List<String> likes;
+  List<String> matches;
+
   //Main Skills (should only be 5)
 
   User({
@@ -46,6 +52,10 @@ class User{
     this.interests,
     this.improvements,
     this.profileLinks,
+    this.networkingSeenAccounts,
+    this.votes,
+    this.likes,
+    this.matches,
   });
 }
 
@@ -78,4 +88,14 @@ class Qualification {
   final String subjectArea;
 
   Qualification({this.type, this.subjectArea});
+}
+
+class SwipeCardUser {
+  final String uid;
+  final String name;
+  final String profilePicture;
+  final String businessName;
+  List<String> likes;
+
+  SwipeCardUser({this.uid, this.name, this.profilePicture, this.businessName, this.likes});
 }

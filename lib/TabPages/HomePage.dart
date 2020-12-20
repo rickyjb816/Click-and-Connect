@@ -1,11 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:oracle/Pages/Home/HelpPostCreation.dart';
+import 'package:oracle/Pages/Home/HomePostCreation.dart';
 import 'package:oracle/Pages/Home/help_post_list.dart';
 import 'package:oracle/Pages/Home/home_post_list.dart';
 import 'package:oracle/Services/database.dart';
 import 'package:oracle/models/help_posts.dart';
 import 'package:oracle/models/home_posts.dart';
 import 'package:oracle/models/user.dart';
+import 'package:oracle/shared/constants.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -31,6 +34,18 @@ class _HomePageState extends State<HomePage> {
       ],
       child: Scaffold(
             backgroundColor: Colors.white,
+            floatingActionButton: FloatingActionButton(backgroundColor: mainColor,
+              onPressed: () {
+                showModalBottomSheet(context: context, builder: (context) {
+                  return Container(
+                    padding: EdgeInsets.symmetric(
+                        vertical: 20.0, horizontal: 60.0),
+                    child: _currentPage == 0 ? HomeCreationForm(userUID: user.uid) : HelpCreationForm(userUID: user.uid),
+                  );
+                });
+              },
+              child: Icon(Icons.add),
+            ),
             body: SingleChildScrollView(
               child: Column(
                 children: [

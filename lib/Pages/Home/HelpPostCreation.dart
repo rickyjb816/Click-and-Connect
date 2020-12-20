@@ -3,16 +3,16 @@ import 'package:oracle/Services/database.dart';
 import 'package:oracle/shared/constants.dart';
 
 
-class ImprovementCreationForm extends StatefulWidget {
+class HelpCreationForm extends StatefulWidget {
 
   final String userUID;
-  ImprovementCreationForm({this.userUID});
+  HelpCreationForm({this.userUID});
 
   @override
-  _ImprovementCreationFormState createState() => _ImprovementCreationFormState();
+  _HelpCreationFormState createState() => _HelpCreationFormState();
 }
 
-class _ImprovementCreationFormState extends State<ImprovementCreationForm> {
+class _HelpCreationFormState extends State<HelpCreationForm> {
 
   final _formKey = GlobalKey<FormState>();
 
@@ -34,6 +34,7 @@ class _ImprovementCreationFormState extends State<ImprovementCreationForm> {
       key: _formKey,
       child: Column(
         children: <Widget>[
+          Text("Write a Help Post"),
           TextFormField(
             decoration: textInputDecoration.copyWith(hintText: 'Title'),
             validator: (val) => val.isEmpty ? 'Please Enter a Title' : null,
@@ -50,7 +51,7 @@ class _ImprovementCreationFormState extends State<ImprovementCreationForm> {
             onPressed: () async {
               final formState = _formKey.currentState;
               if(formState.validate()){
-                await DatabaseService().addNewImprovement(widget.userUID, _title, _description);
+                await DatabaseService().addNewHelpPost(widget.userUID, _title, _description);
                 Navigator.pop(context);
               }
             },

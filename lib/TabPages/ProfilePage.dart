@@ -1,13 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:oracle/Pages/Home/ProfileEdit.dart';
 import 'package:oracle/Pages/Home/help_post_list.dart';
 import 'package:oracle/Pages/Home/home_post_list.dart';
 import 'package:oracle/Pages/Home/profile_links_tile.dart';
 import 'package:oracle/Services/database.dart';
+import 'package:oracle/main.dart';
 import 'package:oracle/models/help_posts.dart';
 import 'package:oracle/models/home_posts.dart';
 import 'package:oracle/models/user.dart';
+import 'package:oracle/shared/constants.dart';
 import 'package:oracle/shared/loading.dart';
 import 'package:polygon_clipper/polygon_border.dart';
 import 'package:polygon_clipper/polygon_clipper.dart';
@@ -16,6 +19,11 @@ import 'package:url_launcher/url_launcher.dart';
 
 
 class ProfilePage extends StatefulWidget {
+
+  final String userUid;
+
+  ProfilePage({this.userUid});
+
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
@@ -40,7 +48,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final user = Provider.of<User>(context);
 
     return StreamBuilder<Object>(
-      stream: DatabaseService(uid: user.uid).user,
+      stream: DatabaseService(uid: widget.userUid).user,
       builder: (context, snapshot) {
         if(snapshot.hasData) {
 
@@ -53,73 +61,87 @@ class _ProfilePageState extends State<ProfilePage> {
           _jobTitle = user.jobTitle;
           _profileImage = user.profileImage;
 
-          return SingleChildScrollView(
-            child: Container(
-                child: Center(
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        SizedBox(height: 40),
-                        CircleAvatar(
-                          radius: 85,
-                          backgroundColor: Colors.black,
-                          child: CircleAvatar(
-                            radius: 80,
-                            backgroundImage: NetworkImage(_profileImage),
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(Icons.control_point), //Need to change to Trophy
-                                Text('Points: $_points'),
-                              ],
+          return Scaffold(
+            appBar: user.uid == widget.userUid ? AppBar(title: Text(_fullName), backgroundColor: mainColor, centerTitle: true,) : null,
+            body: SingleChildScrollView(
+              child: Container(
+                  child: Center(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Align(
+                            alignment: Alignment.topRight,
+                            child: FlatButton(
+                              onPressed: () {
+                                var route = ModalRoute.of(context).settings.name;
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileEdit(user: user), settings: RouteSettings(name: route)));
+                              },
+                              child: Icon(Icons.edit),
+                              color: mainColor,
                             ),
-                            SizedBox(width: 25,),
-                            Row(
-                              children: [
-                                Icon(Icons.account_balance),
-                                Text('Business: $_businessName', maxLines: 1, softWrap: false, overflow: TextOverflow.clip), //Text Can be too long and doesn't wrap
-                              ],
-                            )
-                          ],
-                        ),
-                        Divider(),
-                        Text('Job Title: $_jobTitle'),
-                        Divider(),
-                        Text('Location: $_location'),
-                        Divider(),
-                        _skills(skills: user.skills),
-                        Divider(),
-                        _currentObjectives(currentObjectives: user.currentObjectives.replaceAll("\\n", "\n")),
-                        Divider(),
-                        _tabs(),
-                        Container(
-                          height: 1500,
-                          child: PageView(
-                            physics: ClampingScrollPhysics(),
-                            controller: _pageController,
-                            onPageChanged: (int page) {
-                              setState(() {
-                                _currentPage = page;
-                              });
-                            },
-
-                            children: <Widget>[
-                              _informationTab(user: user),
-                              _postsTab(),
-                              _helpPostsTab(userUid: user.uid,)
+                          ),
+                          SizedBox(height: 40),
+                          CircleAvatar(
+                            radius: 85,
+                            backgroundColor: Colors.black,
+                            child: CircleAvatar(
+                              radius: 80,
+                              backgroundImage: NetworkImage(_profileImage),
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(Icons.control_point), //Need to change to Trophy
+                                  Text('Points: $_points'),
+                                ],
+                              ),
+                              SizedBox(width: 25,),
+                              Row(
+                                children: [
+                                  Icon(Icons.account_balance),
+                                  Text('Business: $_businessName', maxLines: 1, softWrap: false, overflow: TextOverflow.clip), //Text Can be too long and doesn't wrap
+                                ],
+                              )
                             ],
                           ),
-                        ),
-                      ]
-                  ),
-                )
+                          Divider(),
+                          Text('Job Title: $_jobTitle'),
+                          Divider(),
+                          Text('Location: $_location'),
+                          Divider(),
+                          _skills(skills: user.skills),
+                          Divider(),
+                          _currentObjectives(currentObjectives: user.currentObjectives.replaceAll("\\n", "\n")),
+                          Divider(),
+                          _tabs(),
+                          Container(
+                            height: MediaQuery.of(context).size.height+(40*user.profileLinks.length-1), //Think this is what I need to change for the blank bottom
+                            child: PageView(
+                              physics: ClampingScrollPhysics(),
+                              controller: _pageController,
+                              onPageChanged: (int page) {
+                                setState(() {
+                                  _currentPage = page;
+                                });
+                              },
+
+                              children: <Widget>[
+                                _informationTab(user: user),
+                                _postsTab(),
+                                _helpPostsTab(userUid: user.uid,)
+                              ],
+                            ),
+                          ),
+                        ]
+                    ),
+                  )
+              ),
             ),
           );
         }else{
@@ -350,6 +372,7 @@ class _profileLinks extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+        physics: NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         itemCount: profileLinks.length,
         itemBuilder: (context, index) {

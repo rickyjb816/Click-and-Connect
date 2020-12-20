@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:oracle/Pages/Home/LikesPage.dart';
+import 'package:oracle/Pages/Home/Messages.dart';
 import 'package:oracle/TabPages/HomePage.dart';
 import 'package:oracle/TabPages/ImprovementsPage.dart';
 import 'package:oracle/TabPages/NetworkingPage.dart';
@@ -13,7 +14,10 @@ import 'package:provider/provider.dart';
 import '../../models/improvement.dart';
 
 class Home extends StatefulWidget {
-  const Home({Key key}) : super(key: key);
+
+  final User user;
+
+  Home({this.user});
 
   @override
   _HomeState createState() => _HomeState();
@@ -28,17 +32,34 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamProvider<List<Improvement>>.value(
-      value: DatabaseService().improvementsList,
+
+    User user = Provider.of<User>(context);
+    //print(user.likes);
+    return MultiProvider(
+      providers: [
+        StreamProvider<User>.value(value: DatabaseService(uid: widget.user.uid).user),
+        //StreamProvider<List<Improvement>>.value(value: DatabaseService(uid: widget.user.uid, account: widget.user).improvementsList),
+      ],
       child: Scaffold(
         appBar: AppBar(
           title: Text(titles[_currentIndex]),
+          centerTitle: true,
           backgroundColor: mainColor,
+          actions: [
+            /*FlatButton(
+              textColor: Colors.white,
+              child: Icon(Icons.message),
+              onPressed: () {
+                var route = ModalRoute.of(context).settings.name;
+                Navigator.push(context, MaterialPageRoute(builder: (context) => Messages(), settings: RouteSettings(name: route)));
+              },
+            )*/
+          ],
         ),
-        body: callPage(_currentIndex),
+        body: callPage(_currentIndex, user),
         bottomNavigationBar: BottomNavigationBar(
             currentIndex: _currentIndex,
-            selectedItemColor: Colors.black,
+            selectedItemColor: mainColor,
             unselectedItemColor: Colors.black,
             items: [
               BottomNavigationBarItem(
@@ -77,20 +98,20 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget callPage(int index){
+  Widget callPage(int index, User user){
     switch(index)
     {
       case 0:{ //Profile Page
-        return ProfilePage();
+        return ProfilePage(userUid: widget.user.uid,);
       }
       case 1:{ //Home Page
         return HomePage();
       }
       case 2:{ //Networking Page
-        return NetworkingPage();
+        return NetworkingPage(user: widget.user);
       }
       case 3:{ //Improvement Page
-        return ImprovementsPage();
+        return ImprovementsPage(user: widget.user);
       }
       case 4:{ //Settings Page
         return SettingsPage();

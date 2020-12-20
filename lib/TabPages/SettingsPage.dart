@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:oracle/Legals/end_user_agreement.dart';
 import 'package:oracle/Services/auth.dart';
 import 'package:oracle/Services/database.dart';
+import 'package:oracle/Theme.dart';
 import 'package:oracle/models/user.dart';
 import 'package:oracle/shared/constants.dart';
 import 'package:oracle/shared/loading.dart';
@@ -28,6 +29,7 @@ class _SettingsPageState extends State<SettingsPage> {
     String version;
 
     final user = Provider.of<User>(context);
+    //final _themeChanger = Provider.of<ThemeChanger>(context);
 
     PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
       appName = packageInfo.appName;
@@ -51,7 +53,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Row(
+                  /*Row(
                     children: [
                       Text('Notifications'),
                       Switch(
@@ -66,10 +68,10 @@ class _SettingsPageState extends State<SettingsPage> {
                         },
                       ),
                     ],
-                  ),
-                  Row(
+                  ),*/
+                  /*Row(
                     children: [
-                      Text('Light Mode'),
+                      Text('Dark Mode'),
                       Switch(
                         value: lightDarkMode ?? userSettings.lightDarkMode,
                         onChanged: (val) async {
@@ -77,13 +79,14 @@ class _SettingsPageState extends State<SettingsPage> {
                             lightDarkMode = val;
                             //update Theme
                             await DatabaseService(uid: userSettings.uid).updateUserSettings('settings_light_dark_mode', lightDarkMode);
+                            //_themeChanger.setTheme(val ? ThemeData.dark() : ThemeData.light());
                           }
                           );
                         },
                       ),
                     ],
-                  ),
-                  Row(
+                  ),*/
+                  /*Row(
                     children: [
                       Text('Visibility'),
                       Switch(
@@ -98,7 +101,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         },
                       ),
                     ],
-                  ),
+                  ),*/
                   Row(
                     children: [
                       Expanded(
@@ -132,31 +135,39 @@ class _SettingsPageState extends State<SettingsPage> {
                     ],
                   ),
 
-                  RaisedButton(
-                    shape: buttonShape,
-                    color: buttonColor,
-                    textColor: buttonTextColor,
-                    onPressed: () async {
-                      await _auth.signOut();
-                    },
-                    child: Text('Sign out'),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: RaisedButton(
+                          shape: buttonShape,
+                          color: buttonColor,
+                          textColor: buttonTextColor,
+                          onPressed: () async {
+                            await _auth.signOut();
+                          },
+                          child: Text('Sign out'),
+                        ),
+                      ),
+                      SizedBox(width: 10,),
+                    ],
                   ),
-                  RaisedButton(
-                    shape: buttonShape,
-                    color: Colors.red,
-                    textColor: buttonTextColor,
-                    onPressed: () async {
-                      await _auth.deleteAccount();
-                    },
-                    child: Text('Delete Account'),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: RaisedButton(
+                          shape: buttonShape,
+                          color: Colors.red,
+                          textColor: buttonTextColor,
+                          onPressed: () async {
+                            await _auth.deleteAccount();
+                          },
+                          child: Text('Delete Account'),
+                        ),
+                      ),
+                      SizedBox(width: 10,),
+                    ],
                   ),
-                  RaisedButton(
-                    onPressed: () async {
-                      await DatabaseService(uid: userSettings.uid).updateUserPoints(10);
-                    },
-                    child: Text('Increase Points -- Debug'),
-                  ),
-                  Text('$appName version:$version'),
+                  Center(child: Text('$appName version:$version')),
                 ],
               ),
             ),

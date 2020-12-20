@@ -1,24 +1,24 @@
 import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:oracle/models/user.dart';
+import 'package:oracle/models/user.dart' as U;
 import 'package:uuid/uuid.dart';
 
 import 'database.dart';
 
 class AuthService {
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final auth.FirebaseAuth _auth = auth.FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   //Create User Object base on FirebaseUser
-  User _userFromFirebaseUser(FirebaseUser user) {
-    return user != null ? User(uid: user.uid) : null;
+  U.User _userFromFirebaseUser(auth.User user) {
+    return user != null ? U.User(uid: user.uid) : null;
   }
 
   //Auth Change User Stream
-  Stream<User> get user {
+  Stream<U.User> get user {
     return _auth.onAuthStateChanged
         .map(_userFromFirebaseUser);
   }
@@ -27,7 +27,7 @@ class AuthService {
   //Sign in Anon
   Future signInAnon() async {
     try{
-      AuthResult result = await _auth.signInAnonymously();
+      auth.UserCredential result = await _auth.signInAnonymously();
       return _userFromFirebaseUser(result.user);
     } catch(e) {
       print(e.toString());
@@ -38,7 +38,7 @@ class AuthService {
   //Sign In Email and Password
   Future signInEmailAndPassword(String email, String password) async {
     try{
-      AuthResult result = await _auth.signInWithEmailAndPassword(email: email, password: password);
+      auth.UserCredential result = await _auth.signInWithEmailAndPassword(email: email, password: password);
       return _userFromFirebaseUser(result.user);
     } catch (e) {
       print(e.toString());
@@ -49,18 +49,30 @@ class AuthService {
   //Register with Email and Password
   Future registerWithEmailAndPassword(String email, String password, String name, String businessName, String jobTitle, File profileImage) async {
     try{
-      AuthResult result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      auth.UserCredential result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       result.user.sendEmailVerification();
 
       final FirebaseStorage _storage = FirebaseStorage(storageBucket: 'gs://the-oracle-112b2.appspot.com');
 
-      StorageUploadTask _uploadTask;
+      UploadTask _uploadTask;
       String downloadURL;
       var filePath = 'images/${Uuid().v4()}.png';
       _uploadTask = _storage.ref().child(filePath).putFile(profileImage);
-      var storageSnapshot = await _uploadTask.onComplete;
-      var url = await storageSnapshot.ref.getDownloadURL();
-      downloadURL = url;
+      //var storageSnapshot = await _uploadTask.onComplete();
+      //Check this Later
+      _uploadTask.snapshotEvents.listen((event) {
+        print(event.state);
+      });
+      _uploadTask.then((TaskSnapshot taskSnapshot) async {
+        print(taskSnapshot.state);
+        downloadURL = await taskSnapshot.ref.getDownloadURL();
+        /*await userCollection.doc(uid).update({
+          'profile_image': imageDownloadURL ?? imageName,
+        });*/
+      });
+      Reference ref = FirebaseStorage.instance.ref().child(filePath);
+      //String url = (await _uploadTask.).snapshot.ref.getDownloadURL();
+      downloadURL = ref.getDownloadURL().toString();
 
       //create a document for the user with the uid
       await DatabaseService(uid: result.user.uid).updateUserData(name, email, businessName, jobTitle, 'Location Of User', downloadURL);
@@ -77,12 +89,12 @@ class AuthService {
     try {
       GoogleSignInAccount googleUser = await _googleSignIn.signIn();
       GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      final AuthCredential credential = GoogleAuthProvider.getCredential(
+      final auth.AuthCredential credential = auth.GoogleAuthProvider.credential(
           idToken: googleAuth.idToken,
           accessToken: googleAuth.accessToken);
 
-      final AuthResult authResult = await _auth.signInWithCredential(credential);
-      FirebaseUser user = authResult.user;
+      final auth.UserCredential authResult = await _auth.signInWithCredential(credential);
+      auth.User user = authResult.user;
 
       await DatabaseService(uid: authResult.user.uid).updateUserData(googleUser.displayName, googleUser.email, 'Add business', 'Add Job Title', 'Location Of User', googleUser.photoUrl);
       user.sendEmailVerification();
@@ -118,7 +130,7 @@ class AuthService {
 
   //Delete Account
   Future deleteAccount() async {
-    FirebaseUser user = await _auth.currentUser();
+    auth.User user = await _auth.currentUser;
     await DatabaseService(uid: user.uid).deleteUserData();
     return await user.delete();
   }

@@ -17,7 +17,7 @@ class _StorageUploaderState extends State<StorageUploader> {
 
   final FirebaseStorage _storage = FirebaseStorage(storageBucket: 'gs://the-oracle-112b2.appspot.com');
 
-  StorageUploadTask _uploadTask;
+  UploadTask _uploadTask;
 
   void _startUpload() {
     String filePath = 'images/${Uuid().v4()}.png';
